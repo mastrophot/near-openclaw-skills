@@ -5,12 +5,18 @@
   "main": "dist/gas-optimizer.js",
   "scripts": {
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run src/__tests__"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "keywords": [
+    "near",
+    "openclaw",
+    "analytics",
+    "gas",
+    "skills"
+  ],
+  "author": "mastrophot",
+  "license": "MIT",
+  "description": "OpenClaw skills for NEAR gas optimization and on-chain analytics.",
   "dependencies": {
     "near-api-js": "^5.0.1",
     "node-fetch": "^2.7.0"
