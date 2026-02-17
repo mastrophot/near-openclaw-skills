@@ -20,26 +20,47 @@ export async function near_analytics_network() {
 }
 
 export async function near_analytics_whales() {
-  // Mocking whale activity detection
-  return [
-    { account: "whale1.near", amount: "1,000,000 NEAR", type: "transfer" },
-    { account: "exchange.near", amount: "5,000,000 NEAR", type: "withdrawal" }
-  ];
+  try {
+    const response = await fetch('https://api.nearblocks.io/v1/txns?limit=5&sort=amount&order=desc');
+    const data: any = await response.json();
+    return data.txns.map((tx: any) => ({
+      account: tx.signer_id,
+      amount: `${(Number(tx.amount || 0) / 1e24).toLocaleString()} NEAR`,
+      type: "High Value Transfer",
+      hash: tx.transaction_hash
+    }));
+  } catch (e) {
+    return [{ error: "Whale data unavailable." }];
+  }
 }
 
 export async function near_analytics_trending() {
-  // Mocking trending contracts
-  return [
-    { contract: "ref-finance.near", users_24h: 1500, growth: "+15%" },
-    { contract: "burrow.near", users_24h: 800, growth: "+22%" }
-  ];
+  try {
+    const response = await fetch('https://api.nearblocks.io/v1/contracts?limit=5&sort=txns&order=desc');
+    const data: any = await response.json();
+    return data.contracts.map((c: any) => ({
+      contract: c.contract_id,
+      transactions_24h: c.txns_24h,
+      growth: c.txns_growth_24h ? `${c.txns_growth_24h}%` : "Stable"
+    }));
+  } catch (e) {
+    return [{ error: "Trending data unavailable." }];
+  }
 }
 
 export async function near_analytics_defi() {
-  // Mocking DeFi stats
-  return {
-    total_tvl_near: "250,000,000",
-    top_protocol: "Ref Finance",
-    stablecoin_volume_24h: "15,000,000 USD"
-  };
+  try {
+    // Aggregated stats from multiple sources (simplified for real data)
+    const response = await fetch('https://api.nearblocks.io/v1/stats');
+    const data: any = await response.json();
+    return {
+      near_price_usd: data.stats[0].near_price,
+      market_cap_usd: data.stats[0].market_cap,
+      total_transactions: data.stats[0].total_txns,
+      daily_active_accounts: data.stats[0].active_accounts_24h
+    };
+  } catch (e) {
+    return { error: "DeFi/Network stats unavailable." };
+  }
 }
+
